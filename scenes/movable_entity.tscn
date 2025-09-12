@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://dvup5cw1gryvm"]
+
+[ext_resource type="Script" uid="uid://ckbwf1tygj817" path="res://scripts/game/PlayerController.gd" id="1_f412j"]
+
+[sub_resource type="Curve" id="Curve_f412j"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.497354, 0.5), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+texture_filter = 1
+script = ExtResource("1_f412j")
+acceleration = 2000.0
+deceleration = 2000.0
+air_deceleration = 2000.0
+gravity = 3000.0
+jump_duration = 0.3
+jump_curve = SubResource("Curve_f412j")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
