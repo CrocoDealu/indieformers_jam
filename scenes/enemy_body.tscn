@@ -1,0 +1,45 @@
+[gd_scene load_steps=4 format=3 uid="uid://ciuobid518833"]
+
+[ext_resource type="Script" uid="uid://dcnktr6ptlyn1" path="res://scripts/game/EnemyController.gd" id="1_514jr"]
+[ext_resource type="Texture2D" uid="uid://46maqpcrpon8" path="res://assets/enemy.png" id="1_lqklh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lqklh"]
+size = Vector2(8, 13)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_514jr")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+texture = ExtResource("1_lqklh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1.5)
+shape = SubResource("RectangleShape2D_lqklh")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+target_position = Vector2(100, 0)
+
+[node name="AttackCooldown" type="Timer" parent="."]
+one_shot = true
+
+[node name="JumpCooldown" type="Timer" parent="."]
+one_shot = true
+
+[node name="Marker2D" type="Marker2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="ProgressBar" type="ProgressBar" parent="Node2D"]
+offset_left = -4.0
+offset_top = -9.0
+offset_right = 4.0
+offset_bottom = -5.0
+step = 1.0
+value = 100.0
+fill_mode = 1
+show_percentage = false

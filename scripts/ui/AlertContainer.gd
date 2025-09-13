@@ -11,7 +11,7 @@ var current_event_id: int = -1
 var current_event_type: int = -1
 var event_ongoing_time: float = 10.5
 var event_ongoing: bool = false
-var can_generate: bool = false
+@export var can_generate: bool = true
 
 var reverse_event_type = {
 	Enums.event_type.LEFT: "Left",

@@ -16,4 +16,3 @@ void fragment() {
     col.rgb = mix(col.rgb, shifted, strength);
     COLOR = col;
 }
-
