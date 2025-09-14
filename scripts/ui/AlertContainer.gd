@@ -7,6 +7,7 @@ var event_time_check_cooldown: int = 5
 var rng : RandomNumberGenerator = RandomNumberGenerator.new()
 
 var event_preannounce_time: float = 3.0
+var tutorial_event_ongoing_time: float = 10000
 var current_event_id: int = -1
 var current_event_type: int = -1
 var event_ongoing_time: float = 10.5
@@ -21,6 +22,11 @@ var reverse_event_type = {
 func _ready() -> void:
 	TimeManagement.tick.connect(_on_tick)
 	_start_random_event_checks()
+	if GameController.is_tutorial():
+		can_generate = false
+	#LimboConsole.register_command(trigger_event_type)
+	SignalBus.player_area_entered.connect(_on_player_area_entered)
+	SignalBus.player_area_exited.connect(_on_player_area_exited)
 
 func _start_random_event_checks():
 	while true:
@@ -58,8 +64,47 @@ func _on_finish_event_announce(id):
 	event_ongoing = false
 	current_event_id = -1
 
+func trigger_event_type(event_type: int) -> void:
+	if event_ongoing:
+		SignalBus.control_back_to_normal.emit(current_event_type)
+		hide_alert_panel()
+		current_event_id = -1
+
+	event_ongoing = true
+	current_event_type = event_type
+	show_alert_panel()
+
+	glitch_info.set("theme_override_colors/font_color", Color.RED)
+	glitch_info.text = str(reverse_event_type.get(current_event_type, "Unknown")) + " is glitching"
+
+	current_event_id = IdManager.get_id()
+	SignalBus.control_glitched.emit(current_event_type)
+	if GameController.is_tutorial():
+		await TimeManagement.wait_and_do_with_ticks(tutorial_event_ongoing_time, current_event_id)
+	else:
+		await TimeManagement.wait_and_do_with_ticks(event_ongoing_time, current_event_id)
+
+	if current_event_id == -1:
+		return
+
+	SignalBus.control_back_to_normal.emit(current_event_type)
+	hide_alert_panel()
+	event_ongoing = false
+	current_event_id = -1
+
 func show_alert_panel():
 	self.visible = true
 
 func hide_alert_panel():
 	self.visible = false
+
+func _on_player_area_entered(event_type):
+	trigger_event_type(event_type)
+
+func _on_player_area_exited(event_type):
+	terminate_event()
+
+func terminate_event():
+	SignalBus.control_back_to_normal.emit(current_event_type)
+	hide_alert_panel()
+	current_event_id = -1

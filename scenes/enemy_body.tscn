@@ -7,9 +7,11 @@
 size = Vector2(8, 13)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
+z_index = 2
 script = ExtResource("1_514jr")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 2
 texture_filter = 1
 texture = ExtResource("1_lqklh")
 

@@ -1,6 +1,6 @@
 extends Control
 
-@onready var health_bar = $HBoxContainer/ProgressBar
+@onready var health_bar = $HBoxContainer/TextureProgressBar
 @onready var bullet_number_label = $HBoxContainer/HBoxContainer/Label
 @onready var special_progress_bar = $HBoxContainer/HBoxContainer2/Control/TextureRect/ProgressBar
 

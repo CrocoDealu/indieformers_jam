@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dsi0mw5p2spty"]
+
+[ext_resource type="Script" uid="uid://cte6eohk15v86" path="res://scripts/utils/Checker.gd" id="1_x8pkd"]
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_x8pkd")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

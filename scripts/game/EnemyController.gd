@@ -20,19 +20,20 @@ extends CharacterBody2D
 @export var team: int = Enums.Team.ENEMY
 
 # New patrol robustness options
-@export var flip_on_wall: bool = true            # Flip if we hit a wall
-@export var flip_when_blocked_frames: int = 8    # If stuck this many frames, flip
-@export var reset_patrol_origin_on_wall: bool = false  # If true, center shifts when blocked
+@export var flip_on_wall: bool = true          
+@export var flip_when_blocked_frames: int = 8   
+@export var reset_patrol_origin_on_wall: bool = false
 
 
 @export var enemy_health: int
 # References
 @export var player_path: NodePath
-@onready var player: Node = get_node_or_null(player_path)
+var player: Node
 @onready var los_raycast: RayCast2D = $RayCast2D
 @onready var attack_timer: Timer = $AttackCooldown
 @onready var jump_timer: Timer = $JumpCooldown
 @onready var health_bar: ProgressBar = $Node2D/ProgressBar
+@onready var sprite: Sprite2D = $Sprite2D
 
 var States = Enums.State
 var state: int = States.IDLE
@@ -58,6 +59,9 @@ func _ready():
 	jump_timer.one_shot = true
 	health_bar.max_value = enemy_health
 
+	player = get_tree().get_root().get_node("Node2D").get_node("Game/Player")
+	print_debug(player)
+
 func _physics_process(delta: float):
 	state_time += delta
 	
@@ -78,32 +82,34 @@ func _update_state_logic(delta: float) -> void:
 	
 	var to_player = player.global_position - global_position
 	var dist = to_player.length()
-	var has_los = _has_line_of_sight(player.global_position)
+	var has_los = _has_line_of_sight_to(player)
 	
 	match state:
 		States.IDLE:
+			print_debug("Idling")
 			if dist < vision_range and (has_los or not line_of_sight_required):
 				_enter_state(States.CHASE)
 			elif state_time > 1.0:
 				_enter_state(States.PATROL)
 		
 		States.PATROL:
+			#print_debug("Patrolling")
 			ai_input.move_x = patrol_dir * patrol_speed_scale
 			
 			if abs(global_position.x - patrol_origin.x) > patrol_distance:
 				patrol_dir *= -1
 				if reset_patrol_origin_on_wall:
 					patrol_origin = global_position
-			
+			print_debug("Has los ", has_los)
 			if dist < vision_range and (has_los or not line_of_sight_required):
 				_enter_state(States.CHASE)
 		
 		States.CHASE:
+			#print_debug("Chasing")
 			ai_input.move_x = sign(to_player.x)
 			
 			if can_jump and to_player.y < -40 and is_on_floor() and jump_timer.is_stopped():
 				ai_input.jump_pressed = true
-			
 			if dist <= attack_range and (has_los or not line_of_sight_required):
 				_enter_state(States.ATTACK)
 		
@@ -192,24 +198,31 @@ func _perform_attack(target_pos: Vector2) -> void:
 	bullet.hit.connect(_on_bullet_hit)
 	get_tree().current_scene.add_child(bullet)
 
-func _has_line_of_sight(target_pos: Vector2) -> bool:
+func _has_line_of_sight_to(player: CharacterBody2D) -> bool:
 	if los_raycast == null:
-		return true
-	los_raycast.target_position = to_local(target_pos)
+		return true  # Fallback
+	
+	var local_target = los_raycast.to_local(player.global_position)
+	los_raycast.target_position = local_target
 	los_raycast.force_raycast_update()
-	return not los_raycast.is_colliding()
+	
+	if not los_raycast.is_colliding():
+		return true
+	
+	var collider = los_raycast.get_collider()
+	return collider == player
 
 func _enter_state(new_state: int):
 	state = new_state
 	state_time = 0.0
 
 func _on_bullet_hit(target, shooter, bullet):
-	print_debug("Bullet hit someone ", target, " ", shooter, " ", bullet)
 	SignalBus.bullet_hit.emit(target, shooter, bullet)
 
 func subtract_health(health):
 	if enemy_health - health <= 0:
 		self.queue_free()
+		SignalBus.enemy_died.emit(self)
 		return
 	enemy_health -= health
 	health_bar.value = enemy_health
