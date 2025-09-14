@@ -58,6 +58,11 @@ var pending_shot_target: Vector2
 # ========================
 const WALK_THRESHOLD := 5.0  
 
+var invert_mat: ShaderMaterial           
+var mirror_visual_active: bool = false
+var force_mirror_flip: bool = false   
+var glitch_visual_active: bool = false 
+
 func _ready() -> void:
 	if not jump_curve:
 		jump_curve = Curve.new()
@@ -68,6 +73,7 @@ func _ready() -> void:
 		jump_curve.add_point(Vector2(1.0, 0.0))
 		jump_curve.bake()
 	collision_shape_2d.shape = collision_shape
+	_ensure_invert_material()
 	
 	if team == Enums.Team.PLAYER:
 		SignalBus.control_glitched.connect(_on_control_glitched)
@@ -237,6 +243,9 @@ func _input(event):
 				else:
 					_right_click_spin_active = false
 					_start_air_hold()
+	elif event.is_action_pressed("toggle_mirror"):
+		toggle_inverse_locked_controls()
+		toggle_mirror_visual()
 
 func _face_point(target: Vector2) -> void:
 	if is_attacking:
@@ -311,3 +320,28 @@ func _start_air_hold():
 	_air_hold_timer = air_hold_time
 	_right_click_move_active = false
 	_is_jumping = false
+
+func toggle_mirror_visual():
+	mirror_visual_active = !mirror_visual_active
+	_update_invert_shader()
+
+func _update_invert_shader():
+	if invert_mat == null:
+		return
+	var should_be_active = mirror_visual_active or glitch_visual_active
+	invert_mat.set("shader_parameter/active", 1.0 if should_be_active else 0.0)
+
+func toggle_force_flip():
+	force_mirror_flip = !force_mirror_flip
+	if force_mirror_flip:
+		animated_sprite.flip_h = true 
+func _ensure_invert_material():
+	if animated_sprite.material and animated_sprite.material is ShaderMaterial:
+		invert_mat = animated_sprite.material.duplicate() as ShaderMaterial
+		animated_sprite.material = invert_mat
+	else:
+		var shader = load("res://assets/shaders/player_invert.shader")
+		invert_mat = ShaderMaterial.new()
+		invert_mat.shader = shader
+		animated_sprite.material = invert_mat
+	invert_mat.set("shader_parameter/active", 0.0)

@@ -22,10 +22,15 @@ IdManager="*res://scripts/ui/IdManager.gd"
 SignalBus="*res://scripts/utils/SignalBus.gd"
 Enums="*res://scripts/utils/Enums.gd"
 GameController="*res://scripts/game/GameController.gd"
+LimboConsole="*res://addons/limbo_console/limbo_console.gd"
 
 [display]
 
 mouse_cursor/custom_image="uid://bdsxap5kaoe11"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/limbo_console/plugin.cfg")
 
 [input]
 

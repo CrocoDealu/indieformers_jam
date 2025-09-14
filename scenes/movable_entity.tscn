@@ -1,13 +1,20 @@
-[gd_scene load_steps=30 format=3 uid="uid://dvup5cw1gryvm"]
+[gd_scene load_steps=32 format=3 uid="uid://dvup5cw1gryvm"]
 
 [ext_resource type="Script" uid="uid://ckbwf1tygj817" path="res://scripts/game/PlayerController.gd" id="1_f412j"]
 [ext_resource type="Texture2D" uid="uid://vqg38vbyit3r" path="res://assets/solider_animations/Soldier-Idle.png" id="2_c61nk"]
+[ext_resource type="Shader" uid="uid://dkukwwk5361hb" path="res://assets/shaders/player_invert.gdshader" id="2_cqocg"]
 [ext_resource type="Texture2D" uid="uid://0v6usjc0ienj" path="res://assets/solider_animations/Soldier-Attack03.png" id="2_swdue"]
 [ext_resource type="Texture2D" uid="uid://csace000h6lpj" path="res://assets/solider_animations/Soldier-Walk.png" id="3_hh5om"]
 
 [sub_resource type="Curve" id="Curve_f412j"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.497354, 0.5), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 3
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gcg7m"]
+shader = ExtResource("2_cqocg")
+shader_parameter/active = 0.0
+shader_parameter/blend = 0.6
+shader_parameter/flash_speed = 6.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_j65jv"]
 atlas = ExtResource("2_swdue")
@@ -208,6 +215,7 @@ jump_curve = SubResource("Curve_f412j")
 [node name="Visual" type="Node2D" parent="."]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visual"]
+material = SubResource("ShaderMaterial_gcg7m")
 sprite_frames = SubResource("SpriteFrames_c61nk")
 animation = &"attack"
 autoplay = "idle"

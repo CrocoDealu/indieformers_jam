@@ -27,6 +27,7 @@ func _ready() -> void:
 	#LimboConsole.register_command(trigger_event_type)
 	SignalBus.player_area_entered.connect(_on_player_area_entered)
 	SignalBus.player_area_exited.connect(_on_player_area_exited)
+	SignalBus.next_level.connect(_on_next_level)
 
 func _start_random_event_checks():
 	while true:
@@ -108,3 +109,6 @@ func terminate_event():
 	SignalBus.control_back_to_normal.emit(current_event_type)
 	hide_alert_panel()
 	current_event_id = -1
+
+func _on_next_level():
+	can_generate = true

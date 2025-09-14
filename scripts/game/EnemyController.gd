@@ -60,7 +60,6 @@ func _ready():
 	health_bar.max_value = enemy_health
 
 	player = get_tree().get_root().get_node("Node2D").get_node("Game/Player")
-	print_debug(player)
 
 func _physics_process(delta: float):
 	state_time += delta
@@ -86,26 +85,22 @@ func _update_state_logic(delta: float) -> void:
 	
 	match state:
 		States.IDLE:
-			print_debug("Idling")
 			if dist < vision_range and (has_los or not line_of_sight_required):
 				_enter_state(States.CHASE)
 			elif state_time > 1.0:
 				_enter_state(States.PATROL)
 		
 		States.PATROL:
-			#print_debug("Patrolling")
 			ai_input.move_x = patrol_dir * patrol_speed_scale
 			
 			if abs(global_position.x - patrol_origin.x) > patrol_distance:
 				patrol_dir *= -1
 				if reset_patrol_origin_on_wall:
 					patrol_origin = global_position
-			print_debug("Has los ", has_los)
 			if dist < vision_range and (has_los or not line_of_sight_required):
 				_enter_state(States.CHASE)
 		
 		States.CHASE:
-			#print_debug("Chasing")
 			ai_input.move_x = sign(to_player.x)
 			
 			if can_jump and to_player.y < -40 and is_on_floor() and jump_timer.is_stopped():

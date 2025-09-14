@@ -63,6 +63,7 @@ zoom = Vector2(4, 4)
 [node name="Enemy" parent="Game" instance=ExtResource("4_6wevv")]
 position = Vector2(45, -11)
 move_speed = 100.0
+line_of_sight_required = false
 bullet_scene = ExtResource("5_mngbo")
 enemy_health = 30
 player_path = NodePath("../Player")

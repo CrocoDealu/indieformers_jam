@@ -4,7 +4,7 @@ var iem
 var player_controller
 var click_sound
 
-var current_player_health := 150
+var current_player_health := 10
 var max_player_health := 150
 
 var bullet_number := 3
@@ -30,13 +30,7 @@ func _ready() -> void:
 	SignalBus.level_ready.connect(_on_level_ready)
 	SignalBus.enemy_died.connect(_on_enemy_dead)
 	#LimboConsole.register_command(subtract_health)
-	#LimboConsole.register_command(go_to_next_level)
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("toggle_mirror"):
-		iem.toggle()
-		player_controller.toggle_inverse_locked_controls()
-	
+	LimboConsole.register_command(go_to_next_level)
 
 func _send_initial_signals():
 	SignalBus.call_deferred("emit_signal", "bullet_number_changed", bullet_number, max_bullet_number)
@@ -132,6 +126,3 @@ func go_to_next_level():
 	tilemap = level_2
 	starting_point = tilemap.initial_position
 	SignalBus.next_level.emit()
-	
-	
-	
